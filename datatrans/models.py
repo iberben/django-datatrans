@@ -5,7 +5,8 @@ from django.db import models
 from django.db.models import signals
 from django.db.models.query import QuerySet
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.contenttypes import generic
+# from django.contrib.contenttypes.fields import generic
+from django.contrib.contenttypes.fields import GenericForeignKey
 
 from hashlib import sha1
 
@@ -137,7 +138,7 @@ class KeyValue(models.Model):
     """
     content_type = models.ForeignKey(ContentType, null=True)
     object_id = models.PositiveIntegerField(null=True, default=None)
-    content_object = generic.GenericForeignKey('content_type', 'object_id')
+    content_object = GenericForeignKey('content_type', 'object_id')
     field = models.CharField(max_length=255)
     language = models.CharField(max_length=5, db_index=True, choices=settings.LANGUAGES)
 
@@ -154,7 +155,7 @@ class KeyValue(models.Model):
         return u'%s: %s' % (self.language, self.value)
 
     class Meta:
-        #unique_together = ('digest', 'language')
+        # unique_together = ('digest', 'language')
         unique_together = ('language', 'content_type', 'field', 'object_id', 'digest')
 
 
@@ -185,5 +186,3 @@ class FieldWordCount(WordCount):
 
     content_type = models.ForeignKey(ContentType, db_index=True)
     field = models.CharField(max_length=64, db_index=True)
-
-
